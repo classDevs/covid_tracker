@@ -1,0 +1,39 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.1.0'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    project.evaluationDependsOn(':app')
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+// >> GIT_ALL_IN_ONE:startApi
+tasks.register('startApi', Exec) {
+    workingDir = rootProject.projectDir
+    def os = org.gradle.internal.os.OperatingSystem.current()
+    if (os.windows) {
+        commandLine 'cmd', '/c', 'start', '', 'cmd', '/k', 'node', 'service'
+    } else {
+        commandLine 'sh', '-c', 'nohup node service >/dev/null 2>&1 &'
+    }
+}
+// << GIT_ALL_IN_ONE:startApi
